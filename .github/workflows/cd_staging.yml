@@ -22,9 +22,29 @@ jobs:
       - name: Deploy via SSH
         run: |
           ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@3.87.96.136 << 'EOF'
+            # Navigate to project folder
             cd turbo-test/BookMyShow/
+
+            # Pull latest changes
             git pull origin main
+
+            # Install pnpm if not installed
+            command -v pnpm >/dev/null 2>&1 || (
+              curl -fsSL https://get.pnpm.io/install.sh | sh -
+              export PATH="$HOME/.local/share/pnpm:$PATH"
+              echo 'export PATH="$HOME/.local/share/pnpm:$PATH"' >> ~/.bashrc
+            )
+
+            # Install dependencies
+            export PATH="$HOME/.local/share/pnpm:$PATH"
             pnpm install
+
+            # Build project
             pnpm run build
+
+            # Install pm2 if not installed
+            command -v pm2 >/dev/null 2>&1 || npm install -g pm2
+
+            # Restart server
             pm2 restart all
           EOF
