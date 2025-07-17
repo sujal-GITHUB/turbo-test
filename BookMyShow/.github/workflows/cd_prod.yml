@@ -1,0 +1,30 @@
+name: Deploying changes to staging
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  redeploy-everything:
+    name: Deploying changes to staging
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
+          chmod 600 ssh_key
+
+      - name: Deploy via SSH
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@54.235.29.5 << 'EOF'
+            cd turbo-test/BookMyShow/
+            git pull origin main
+            pnpm install
+            pnpm run build
+            pm2 restart all
+          EOF
