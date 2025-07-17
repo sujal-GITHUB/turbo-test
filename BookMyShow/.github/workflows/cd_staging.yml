@@ -21,7 +21,7 @@ jobs:
 
       - name: Deploy via SSH
         run: |
-          ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@54.235.29.5 << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@3.87.96.136 << 'EOF'
             cd turbo-test/BookMyShow/
             git pull origin main
             pnpm install
